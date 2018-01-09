@@ -6,8 +6,8 @@ Created on 2016-10-20
 '''
 from app.wraps.login_wrap import login_required
 from app import app
-from app.utils import ResponseUtil, RequestUtil
-from app.database.model import History, WebHook
+from app.utils import ResponseUtil, RequestUtil, AuthUtil
+from app.database.model import History
 
 
 # get history list
@@ -18,10 +18,9 @@ def api_history_list():
     user_id = RequestUtil.get_login_user().get('id', '')
 
     webhook_id = RequestUtil.get_parameter('webhook_id', '')
-    webhook = WebHook.query.filter_by(user_id=user_id, id=webhook_id).first()
 
-    if not webhook:
-        return ResponseUtil.standard_response(0, 'Permition deny!')
+    if not AuthUtil.has_readonly_auth(user_id, webhook_id):
+        return ResponseUtil.standard_response(0, 'Permission deny!')
 
     page = RequestUtil.get_parameter('page', '1')
     try:
@@ -32,12 +31,12 @@ def api_history_list():
         page = 1
 
     page_size = 25
-    paginations = History.query.filter_by(webhook_id=webhook_id)\
-                               .order_by(History.id.desc())\
-                               .paginate(page, page_size, error_out=False)
+    paginations = History.query\
+        .filter_by(webhook_id=webhook_id)\
+        .order_by(History.id.desc())\
+        .paginate(page, page_size, error_out=False)
 
-    histories = paginations.items
-    histories = [history.dict() for history in histories]
+    histories = [history.dict() for history in paginations.items]
 
     data = {
         'histories': histories,

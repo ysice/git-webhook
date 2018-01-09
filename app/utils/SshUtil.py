@@ -6,14 +6,12 @@ Created on 2016-8-2
 '''
 import paramiko
 import StringIO
-from app.utils import StringUtil
-import re
 
 
-def ssh_log_success(log, fail_regex='.*(fail|error|0)$'):
-    matchObj = re.match(fail_regex, log, re.M | re.I | re.S)
-    if matchObj:
-        return False
+def is_log_success(log):
+    for x in ['fatal', 'fail', 'error']:
+        if log.startswith(x) or log.endswith(x):
+            return False
     return True
 
 
@@ -23,36 +21,40 @@ def do_ssh_cmd(ip, port, account, pkey, shell, push_data='', timeout=300):
         port = int(port)
     except:
         port = 22
-    
-    pkey = pkey.strip() + '\n'  # 注意最后有一个换行
-    
-    pkey_file = StringIO.StringIO(pkey)
-    private_key = paramiko.RSAKey.from_private_key(pkey_file)
-    
+
     s = paramiko.SSHClient()
-    
     s.load_system_host_keys()
     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    
-    s.connect(ip, port, account, pkey=private_key)
+
+    try:
+        # 首先以 ssh 密钥方式登陆
+        pkey_file = StringIO.StringIO(pkey.strip() + '\n')  # 注意最后有一个换行
+        private_key = paramiko.RSAKey.from_private_key(pkey_file)
+        s.connect(ip, port, account, pkey=private_key, timeout=5)
+        pkey_file.close()
+    except:
+        # 如果出现异常，则使用 用户密码登陆的方式
+        s.connect(ip, port, account, password=pkey, timeout=5)
+
 #     if push_data:
 #     shell = shell + (" '%s'" % push_data)
     shell = shell.split('\n')
     shell = [sh for sh in shell if sh.strip()]
     shell = ' && '.join(shell)
-    
+
     stdin, stdout, stderr = s.exec_command(shell, timeout=timeout)
-    
-    out = stdout.read()
+
+    log = stdout.read()
     err = stderr.read()
 
-    log = '%s%s' % (out, err)  # log
     success = True
+    if not log and err:
+        success = False
+        log = err
 
     s.close()
-    pkey_file.close()
-    
+
     if success:
-        success = ssh_log_success(log)
-    
+        success = is_log_success(log)
+
     return success, log

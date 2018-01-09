@@ -3,7 +3,6 @@ import StringUtils from '../utils/stringUtils.jsx';
 import { Link } from 'react-router';
 
 const Header = React.createClass({
-  propTypes: {},
   componentDidMount: function() {
     $(this.refs.user_action).dropdown();
   },
@@ -32,7 +31,7 @@ const Header = React.createClass({
           </Link>
           <Link to="/" className="header item">Home</Link>
           <Link to="/webhook" className="header item">Git WebHook</Link>
-          <Link to="/server" className="header item">服务器</Link>
+          <Link to="/server" className="header item">Server</Link>
           <Link to="/doc" className="header item">Documents</Link>
           
           <div className="right menu">

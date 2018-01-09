@@ -10,9 +10,12 @@ const Index = React.createClass({
         <div className="ui inverted vertical masthead center aligned segment">
           <div className="ui container">
             <div className="ui large secondary inverted pointing menu">
-              <a className="active item">Home</a>
-              <a target="_blank" href="https://github.com/NetEaseGame/git-webhook" className="item">Source on GitHub</a>
-              <a target="_blank" href="https://github.com/hustcc" className="item">Me</a>
+              <a className="active header item">Home</a>
+              <Link to="/webhook" className="header item">DashBoard</Link>
+              <Link to="/doc" className="header item">Documents</Link>
+              <a target="_blank" href="https://github.com/NetEaseGame/git-webhook" className="header item">Source</a>
+              <a target="_blank" href="https://github.com/hustcc" className="header item">Me</a>
+              <a to="#" className="header item">{'v ' + window.__version__}</a>
             </div>
           </div>
 
@@ -20,7 +23,7 @@ const Index = React.createClass({
             <h1 className="ui inverted header">
               Git WebHook
             </h1>
-            <h2>GitHub / GitLab / GitOsc are all supported.</h2>
+            <h2>GitHub / GitLab / Gogs / GitOsc are all supported.</h2>
             {
               loginUser && loginUser.id &&
                 <Link to="/webhook" className="ui huge primary button">
@@ -43,7 +46,7 @@ const Index = React.createClass({
             <div className="center aligned row">
               <div className="column">
                 <h3>"Git WebHook to auto-deploy."</h3>
-                <p>GitHub / GitLab / GitOsc are all supported.</p>
+                <p>GitHub / GitLab / Gogs / GitOsc are supported.</p>
               </div>
               <div className="column">
                 <h3>"Any hook has it's status."</h3>

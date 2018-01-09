@@ -30,8 +30,13 @@ def get_push_name(hook_data):
     uid = hook_data.get('user_name', None)  # gitlib 格式
     if uid:
         return uid
+    uid = hook_data.get('pusher', {}).get('username', None)  # gogs 格式
+    if uid:
+        return uid
 
-    uid = hook_data.get('push_data', {}).get('user', {}).get('name', None)  # gitosc的data格式
+    uid = hook_data\
+        .get('push_data', {})\
+        .get('user', {}).get('name', None)  # gitosc的data格式
     if uid:
         return uid
     return ''
@@ -45,8 +50,10 @@ def get_push_email(hook_data):
     uid = hook_data.get('user_email', None)  # gitlib 格式
     if uid:
         return uid
-    
-    uid = hook_data.get('push_data', {}).get('user', {}).get('email', None)  # gitosc的data格式
+
+    uid = hook_data\
+        .get('push_data', {})\
+        .get('user', {}).get('email', None)  # gitosc的data格式
     if uid:
         return uid
     return ''

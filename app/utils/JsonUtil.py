@@ -2,7 +2,7 @@
 '''
 Created on 2016年2月19日
 一些json的处理方法
-@author: hzwangzhiwei
+@author: hustcc
 '''
 
 from datetime import date
@@ -25,7 +25,7 @@ def object_2_json(obj):
     py字典、数据转成json字符转
     '''
     if obj is None:
-        return {}
+        obj = {}
     return json.dumps(obj, cls=CJsonEncoder)
 
 
